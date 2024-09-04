@@ -237,35 +237,50 @@
     }
   });
 
-  /**
-   * Initiate Pure Counter 
-   */
   new PureCounter();
 
 })()
+emailjs.init("6dP85jFUkwHJrGA72");
 
-emailjs.init({
-  publicKey: "HfjFIShRxZq3tcXWy",
-});
-document.getElementById("btn").onclick = function () {
-  let message = document.getElementById("message").value
-  let email = document.getElementById("email").value
-  let name = document.getElementById("name").value
+document.querySelector('.php-email-form').addEventListener('submit', function(event) {
+  event.preventDefault(); 
 
-  if (message == "" || email == "" || name == "") {
-    alert("field can't be empty")
-  } else {
-    emailjs.send("service_xuvqfff", "template_zbsidln", {
-      from_name: name,
-      message: message,
-      from_email: email,
-    }).then(function () {
-      alert("email sent successfully")
-    },
-      function () {
-        alert("error! try again later")
-      }
-    )
+  const message = document.getElementById("message").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const name = document.getElementById("name").value.trim();
+  const errorMessageElem = document.querySelector('.error-message');
+  const loadingElem = document.querySelector('.loading');
+  const sentMessageElem = document.querySelector('.sent-message');
+
+  errorMessageElem.style.display = 'none';
+  
+  if (message === "" || email === "" || name === "") {
+    loadingElem.style.display = 'none';
+    errorMessageElem.textContent = "Fields can't be empty";
+    errorMessageElem.style.display = 'block';
+    return;
   }
-}
+
+  loadingElem.style.display = 'block';
+
+  emailjs.send("service_xuvqfff", "template_zbsidln", {
+    from_name: name,
+    message: message,
+    from_email: email,
+  }).then(
+    function(response) {
+      loadingElem.style.display = 'none';
+      sentMessageElem.style.display = 'block';
+      console.log('Success:', response);
+    },
+    function(error) {
+      loadingElem.style.display = 'none';
+      errorMessageElem.textContent = `Error: ${error.text || 'Please try again later'}`;
+      errorMessageElem.style.display = 'block';
+      console.error('Error details:', error);
+    }
+  );
+});
+
+
 AOS.init();
